@@ -1,0 +1,16 @@
+CREATE TABLE INT_REGLAS (
+    CODIGOREGLA       VARCHAR(10) NOT NULL,
+    CODIGOTIPOENVIO   ENTERO /* ENTERO = INTEGER */,
+    CODIGOMEDIOENVIO  SMALLINT,
+    RECORDATORIO      SMALLINT,
+    ACTIVO            SMALLINT
+);
+
+
+
+
+/******************************************************************************/
+/***                              Primary Keys                              ***/
+/******************************************************************************/
+
+ALTER TABLE INT_REGLAS ADD CONSTRAINT PK_INT_REGLAS PRIMARY KEY (CODIGOREGLA);

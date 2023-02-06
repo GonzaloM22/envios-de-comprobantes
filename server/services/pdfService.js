@@ -22,7 +22,7 @@ const pdfService = async (clients) => {
         let jsonFile = { file, phoneNumber };
 
         axios.defaults.headers.common['Authorization'] =
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOnsidXVpZCI6IjQ5NTM0NTczNDg5NTczNDg5NzUiLCJpc0FkbWluIjpmYWxzZSwidXNlcklkIjoiQURNSU4ifSwiaWF0IjoxNjc1NDMyNzc1LCJleHAiOjE2NzU1MTkxNzV9.PpYssU0f-OI9dqRAzqbIihZchp01SSJ0ygrEqnPNMS';
+          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOnsidXVpZCI6IjQ5NTM0NTczNDg5NTczNDg5NzUiLCJpc0FkbWluIjpmYWxzZSwidXNlcklkIjoiQURNSU4ifSwiaWF0IjoxNjc1Njk1ODkyLCJleHAiOjE2NzU3ODIyOTJ9.t1TE8cGzz9g9X3Jxvi9gRN9Ebw7IGYDU5RXbMI2DU5U';
 
         await axios.post(
           `https://pruebaapivanguard.procomisp.com.ar/v5/wpdf`,
@@ -49,9 +49,10 @@ const pdfService = async (clients) => {
         await page.setContent(content);
         await page.emulateMediaType('screen');
 
-        //Guardamos el pdf en la ruta path
+        //Guardamos el pdf en la ruta pathName
+        const pathName = `${client.RAZONSOCIAL} - ${Date.now()}.pdf`;
         await page.pdf({
-          path: `${client.RAZONSOCIAL}.pdf`,
+          path: pathName,
           margin: {
             top: '100px',
             right: '50px',
@@ -62,10 +63,16 @@ const pdfService = async (clients) => {
           format: 'A4',
         });
 
-        const fileName = `${client.RAZONSOCIAL}.pdf`;
+        const fileName = pathName;
 
         //Ejecutamos la funcion de enviar mediante whatsapp
         await sendPdf(fileName);
+
+        //Eliminamos el pdf generado
+        fs.unlink(pathName, (err) => {
+          if (err) throw err;
+          //console.log('successfully deleted');
+        });
 
         await browser.close();
       });
