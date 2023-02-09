@@ -2,15 +2,19 @@ const { clientsService } = require('../services/clientsService');
 const { pdfService } = require('../services/pdfService');
 const cron = require('node-cron');
 
-const generatePdf = (req, res) => {
-  //const requestAPI = await axios.get('http://localhost:5008/api/clients');
-  //const clients = requestAPI.data.clients;
+const generatePdf = (days) => {
+  let time;
+  if (days === 0) {
+    time = '* * * * *';
+  } else {
+    time = `0 0 12 */${days} * * *`; //Se ejecuta cada X días a las 12 pm
+  }
 
-  //0 0 12 1/30 * * * CADA 30 DIAS A LAS 12 PM
-  cron.schedule('* * * * *', async () => {
+  cron.schedule(time, async () => {
     try {
       //Traemos todas las deudas de los clientes
       const response = await clientsService();
+
       const clients = response.clients;
 
       await pdfService(clients);

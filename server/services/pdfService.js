@@ -21,8 +21,20 @@ const pdfService = async (clients) => {
         let phoneNumber = '543512735687';
         let jsonFile = { file, phoneNumber };
 
-        axios.defaults.headers.common['Authorization'] =
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOnsidXVpZCI6IjQ5NTM0NTczNDg5NTczNDg5NzUiLCJpc0FkbWluIjpmYWxzZSwidXNlcklkIjoiQURNSU4ifSwiaWF0IjoxNjc1Njk1ODkyLCJleHAiOjE2NzU3ODIyOTJ9.t1TE8cGzz9g9X3Jxvi9gRN9Ebw7IGYDU5RXbMI2DU5U';
+        const body = {
+          username: process.env.USERNAMEAPI,
+          password: process.env.PASSWORDAPI,
+          deviceinfo: process.env.DEVICEINFO,
+        };
+
+        const data = await axios.post(
+          `https://pruebaapivanguard.procomisp.com.ar/v5/auth/login`,
+          body
+        );
+
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${data.data.token}`;
 
         await axios.post(
           `https://pruebaapivanguard.procomisp.com.ar/v5/wpdf`,
@@ -71,7 +83,6 @@ const pdfService = async (clients) => {
         //Eliminamos el pdf generado
         fs.unlink(pathName, (err) => {
           if (err) throw err;
-          //console.log('successfully deleted');
         });
 
         await browser.close();
