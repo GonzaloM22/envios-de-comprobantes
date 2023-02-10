@@ -11,7 +11,9 @@ const newRule = async (req, res) => {
 
     const response = await newRuleService(rule);
 
-    if (rule.activo) generatePdf(parseInt(rule.recordatorio));
+    if (rule.codigomedioenvio === 1)
+      // 1 = whatsApp
+      generatePdf(parseInt(rule.recordatorio), rule.activo);
 
     return res
       .status(response.status)
@@ -26,6 +28,11 @@ const updateRule = async (req, res) => {
     const rule = req.body;
 
     const response = await updateRuleService(rule);
+
+    if (rule.codigomedioenvio === 1)
+      // 1 = whatsApp
+      generatePdf(parseInt(rule.recordatorio), rule.activo);
+
     return res
       .status(response.status)
       .json({ msg: response.message, rule: response.rule });
@@ -37,7 +44,6 @@ const updateRule = async (req, res) => {
 const getRules = async (req, res) => {
   try {
     const response = await getRulesService();
-
     return res
       .status(response.status)
       .json({ msg: response.message, rules: response.rules });

@@ -36,14 +36,14 @@ const pdfService = async (clients) => {
           'Authorization'
         ] = `Bearer ${data.data.token}`;
 
-        await axios.post(
-          `https://pruebaapivanguard.procomisp.com.ar/v5/wpdf`,
-          jsonFile
-        );
-        /*.then((response) => {
-              message: response;
-            })
-            .catch((error) => console.log('error: ', error));*/
+        await axios
+          .post(`https://pruebaapivanguard.procomisp.com.ar/v5/wpdf`, jsonFile)
+          .then((response) => {
+            //console.log(response);
+          })
+          .catch((error) => {
+            //console.log('error: ', error)
+          });
       });
     } catch (error) {
       throw error;
