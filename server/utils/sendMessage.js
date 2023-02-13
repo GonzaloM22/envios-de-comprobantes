@@ -3,6 +3,7 @@ const { pdfService } = require('../services/pdfService');
 
 const expression = async () => {
   try {
+    //console.log('Ejecutando...');
     const response = await clientsService(); //Traemos todas las deudas de los clientes
     const clients = response.clients;
     await pdfService(clients);
