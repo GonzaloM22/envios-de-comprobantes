@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const { startCron } = require('./utils/cron');
 
+startCron();
 //Hanilitar template engine
 app.set('view engine', 'pug');
 app.set('views', './views');

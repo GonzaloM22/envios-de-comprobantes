@@ -82,4 +82,31 @@ const updateRuleService = async (rule) => {
   });
 };
 
-module.exports = { newRuleService, getRulesService, updateRuleService };
+const updateLastSentDate = async (codigo) => {
+  const sql = `update INT_REGLAS set FECHAULTIMOENVIO = current_timestamp where CODIGOREGLA = ${codigo}`;
+
+  return new Promise((resolve, reject) => {
+    firebird.attach(options, function (err, db) {
+      if (err) reject({ status: 500, msg: err });
+
+      db.query(sql, function (err, result) {
+        if (err) reject({ status: 500, msg: err });
+
+        // IMPORTANT: close the connection
+        db.detach();
+
+        resolve({
+          status: 200,
+          message: false,
+        });
+      });
+    });
+  });
+};
+
+module.exports = {
+  newRuleService,
+  getRulesService,
+  updateRuleService,
+  updateLastSentDate,
+};
