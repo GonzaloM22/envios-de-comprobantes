@@ -1,12 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { startCron } = require('./utils/cron');
+const { startCron } = require('./utils/cron/cron');
 
 startCron();
 //Hanilitar template engine
 app.set('view engine', 'pug');
 app.set('views', './views');
+
+//Carpeta publica
+app.use(express.static('public'));
 
 require('dotenv').config();
 

@@ -1,8 +1,8 @@
 const cron = require('node-cron');
-const { expression } = require('./sendMessage');
+const { task } = require('./taskCron');
 
 const startCron = () => {
-  cron.schedule('* * * * *', expression);
+  cron.schedule('* * * * *', task);
 };
 
 module.exports = { startCron };

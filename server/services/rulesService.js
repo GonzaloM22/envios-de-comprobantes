@@ -5,8 +5,8 @@ const { options } = require('../config');
 const newRuleService = async (rule) => {
   const { codigotipoenvio, codigomedioenvio, recordatorio, activo } = rule;
 
-  const sql = `insert into INT_REGLAS (CODIGOREGLA, CODIGOTIPOENVIO, CODIGOMEDIOENVIO, RECORDATORIO, ACTIVO)
-  values (gen_id(AUXILIAR,1), ${codigotipoenvio}, ${codigomedioenvio}, ${recordatorio}, ${activo})`;
+  const sql = `insert into INT_REGLAS (CODIGOREGLA, CODIGOTIPOENVIO, CODIGOMEDIOENVIO, RECORDATORIO, ACTIVO, FECHAULTIMOENVIO)
+  values (gen_id(AUXILIAR,1), ${codigotipoenvio}, ${codigomedioenvio}, ${recordatorio}, ${activo}, '01/01/1900')`;
 
   return new Promise((resolve, reject) => {
     firebird.attach(options, function (err, db) {
@@ -82,8 +82,8 @@ const updateRuleService = async (rule) => {
   });
 };
 
-const updateLastSentDate = async (codigo) => {
-  const sql = `update INT_REGLAS set FECHAULTIMOENVIO = current_timestamp where CODIGOREGLA = ${codigo}`;
+const updateLastSentDate = async (codigoregla, codigomedioenvio) => {
+  const sql = `update INT_REGLAS set FECHAULTIMOENVIO = current_timestamp where CODIGOMEDIOENVIO = ${codigomedioenvio} and CODIGOREGLA = ${codigoregla}`;
 
   return new Promise((resolve, reject) => {
     firebird.attach(options, function (err, db) {

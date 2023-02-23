@@ -5,7 +5,7 @@ const fs = require('fs');
 const pug = require('pug');
 const pdf2base64 = require('pdf-to-base64');
 
-const pdfService = async (clients) => {
+const sendWSP = async (clients) => {
   const compile = async function (templateName, data) {
     const filePath = path.join(process.cwd(), 'views', `${templateName}.pug`);
     const html = fs.readFileSync(filePath, 'utf-8');
@@ -53,16 +53,17 @@ const pdfService = async (clients) => {
   (async () => {
     //Recorremos las deudas y generamos un pdf por cada cliente
     try {
-      clients.forEach(async (client) => {
+      clients?.forEach(async (client) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda
+        const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
 
         await page.setContent(content);
         await page.emulateMediaType('screen');
 
         //Guardamos el pdf en la ruta pathName
         const pathName = `${client.RAZONSOCIAL} - ${Date.now()}.pdf`;
+        await page.addStyleTag({ path: 'public/css/app.css' });
         await page.pdf({
           path: pathName,
           margin: {
@@ -93,4 +94,4 @@ const pdfService = async (clients) => {
   })();
 };
 
-module.exports = { pdfService };
+module.exports = { sendWSP };
