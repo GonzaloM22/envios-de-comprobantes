@@ -5,6 +5,7 @@ const {
   newRule,
   getRules,
   updateRule,
+  deleteRule,
 } = require('../controllers/rulesControlles');
 const {
   newConfig,
@@ -16,7 +17,12 @@ const router = express.Router();
 
 router.post('/login', login);
 router.get('/clients', getClients);
-router.route('/rules').post(newRule).get(getRules).put(updateRule);
+router
+  .route('/rules')
+  .post(newRule)
+  .get(getRules)
+  .put(updateRule)
+  .delete(deleteRule);
 router.route('/config').post(newConfig).get(getConfigs).put(updateConfig);
 
 router.get('/deudas', (req, res) => res.render('deudas'));

@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const pug = require('pug');
 const { updateLastSentDate } = require('../services/rulesService');
+const { formatDate } = require('../helpers');
 
 // async..await is not allowed in global scope, must use a wrapper
 const sendEmail = async (clients, config, rule) => {
@@ -34,7 +35,7 @@ const sendEmail = async (clients, config, rule) => {
     // send mail with defined transport object
     try {
       await transporter.sendMail({
-        from: 'Flexxus Enterprise', // sender address
+        from: 'gonn.moreno@gmail.com', // sender address
         to: 'gonn.m@hotmail.com', // list of receivers
         subject: 'Saldo de Cuenta Corriente', // Subject line
         text: 'Cuenta Corriente', // plain text body
@@ -53,6 +54,7 @@ const sendEmail = async (clients, config, rule) => {
   (async () => {
     //Recorremos las deudas y generamos un pdf por cada cliente
     try {
+      let anterior;
       return clients?.forEach(async (client) => {
         const browser = await puppeteer.launch({
           args: ['--no-sandbox'],
@@ -64,10 +66,12 @@ const sendEmail = async (clients, config, rule) => {
           .readFileSync(`${process.cwd()}\\/public/img/logoEmpresa.png`)
           .toString('base64');
         img = `data:image/png;base64,${img}`;
+        if (client.CODIGOPARTICULAR == anterior.CODIGOPARTICULAR) {
+          anterior = { ...anterior, client };
+        }
+        client = { ...client, img, formatDate };
 
-        client = { ...client, img };
-
-        const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
+        /*const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
 
         await page.setContent(content, { waitUntil: 'networkidle0' });
         await page.emulateMediaType('print');
@@ -101,8 +105,8 @@ const sendEmail = async (clients, config, rule) => {
         await browser.close();
 
         //Actualizamos fecha de ultimo envio en la base de datos
-        if (sent)
-          await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
+        if (sent)*/
+        await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
       });
     } catch (error) {
       throw false;

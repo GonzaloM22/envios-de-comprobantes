@@ -15,7 +15,7 @@ html(lang="en")
                 .flex.items-center.justify-between.border-b-2
                     p.text-sm.mb-2 Tel: 0351-5685000
                     p.mb-2 Fecha: 22/02/2023
-                h2.mt-4.font-bold.text-xl Listado de Deuda total en Cuenta Corriente
+                h2.mt-4.font-bold.text-xl Listado de Deuda en Cuenta Corriente
                 main
                     p.py-2 Cliente: #{RAZONSOCIAL}
                     h3.mt-5 Detalle
@@ -23,18 +23,22 @@ html(lang="en")
                         table.w-full
                             thead.text-zinc-800
                                 tr.border-b
-                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Código
-                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Razón Social
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Tipo
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Numero
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Fecha Comp.
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Fecha Vto.
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Total
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Pagado
-                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Saldo Total
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Saldo
                             tbody.divide-y
                                 tr
-                                    td.p-2.text-xs.text-gray-700 32256
-                                    td.p-2.text-xs.text-gray-700 Gonzalo
-                                    td.p-2.text-xs.text-gray-700 $10500
-                                    td.p-2.text-xs.text-gray-700 $500
-                                    td.p-2.text-xs.text-gray-700 $10000       
+                                    td.p-2.text-xs.text-gray-700 #{TIPOCOMPROBANTE}
+                                    td.p-2.text-xs.text-gray-700 #{NUMEROCOMPROBANTE}
+                                    td(class="p-2 text-xs text-gray-700")= formatDate(FECHACOMPROBANTE)
+                                    td(class="p-2 text-xs text-gray-700")= formatDate(FECHAVENCIMIENTO)
+                                    td.p-2.text-xs.text-gray-700 #{TOTAL}
+                                    td.p-2.text-xs.text-gray-700 #{PAGADO}
+                                    td.p-2.text-xs.text-gray-700 #{SALDO}        
 
                     
                 

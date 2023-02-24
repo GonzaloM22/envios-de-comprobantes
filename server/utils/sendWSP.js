@@ -4,8 +4,9 @@ const path = require('path');
 const fs = require('fs');
 const pug = require('pug');
 const pdf2base64 = require('pdf-to-base64');
+const { updateLastSentDate } = require('../services/rulesService');
 
-const sendWSP = async (clients) => {
+const sendWSP = async (clients, rule) => {
   const compile = async function (templateName, data) {
     const filePath = path.join(process.cwd(), 'views', `${templateName}.pug`);
     const html = fs.readFileSync(filePath, 'utf-8');
@@ -18,7 +19,7 @@ const sendWSP = async (clients) => {
     try {
       pdf2base64(fileName).then(async (response) => {
         const file = response;
-        let phoneNumber = '543512735687';
+        let phoneNumber = '';
         let jsonFile = { file, phoneNumber };
 
         const body = {
@@ -38,28 +39,35 @@ const sendWSP = async (clients) => {
 
         await axios
           .post(`https://pruebaapivanguard.procomisp.com.ar/v5/wpdf`, jsonFile)
-          .then((response) => {
-            //console.log(response);
-          })
-          .catch((error) => {
-            //console.log('error: ', error);
-          });
+          .then((response) => console.log(response.data))
+          .catch((error) => console.log(error));
       });
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   };
 
   (async () => {
     //Recorremos las deudas y generamos un pdf por cada cliente
     try {
-      clients?.forEach(async (client) => {
-        const browser = await puppeteer.launch();
+      return clients?.forEach(async (client) => {
+        const browser = await puppeteer.launch({
+          args: ['--no-sandbox'],
+        });
         const page = await browser.newPage();
+
+        //Convertimos la imagen a base 64
+        let img = fs
+          .readFileSync(`${process.cwd()}\\/public/img/logoEmpresa.png`)
+          .toString('base64');
+        img = `data:image/png;base64,${img}`;
+
+        client = { ...client, img };
+
         const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
 
-        await page.setContent(content);
-        await page.emulateMediaType('screen');
+        await page.setContent(content, { waitUntil: 'networkidle0' });
+        await page.emulateMediaType('print');
 
         //Guardamos el pdf en la ruta pathName
         const pathName = `${client.RAZONSOCIAL} - ${Date.now()}.pdf`;
@@ -87,9 +95,11 @@ const sendWSP = async (clients) => {
         });
 
         await browser.close();
+
+        await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
       });
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   })();
 };

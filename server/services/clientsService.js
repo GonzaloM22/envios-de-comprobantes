@@ -4,7 +4,7 @@ const { options } = require('../config');
 
 const clientsService = async () => {
   // Consultamos el procedimiento almacenado "INT_DEUDAS"
-  const sql = 'select * from DEUDAS';
+  const sql = 'select * from INT_DEUDAS';
 
   return new Promise((resolve, reject) => {
     firebird.attach(options, function (err, db) {

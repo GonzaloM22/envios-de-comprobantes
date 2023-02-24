@@ -1,10 +1,7 @@
 const { clientsService } = require('../../services/clientsService');
 const { sendWSP } = require('../sendWSP');
 const { sendEmail } = require('../sendEmail');
-const {
-  getRulesService,
-  updateLastSentDate,
-} = require('../../services/rulesService');
+const { getRulesService } = require('../../services/rulesService');
 const { getConfigsService } = require('../../services/configService');
 
 const task = async (req, res) => {
@@ -20,8 +17,7 @@ const task = async (req, res) => {
       ) {
         const response = await clientsService(); //Traemos todas las deudas de los clientes
         const clients = response.clients;
-        await sendWSP(clients);
-        await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
+        await sendWSP(clients, rule);
       }
       //Envio por Email
       if (
