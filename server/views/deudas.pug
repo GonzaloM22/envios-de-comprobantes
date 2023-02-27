@@ -17,7 +17,7 @@ html(lang="en")
                     p.mb-2 Fecha: 22/02/2023
                 h2.mt-4.font-bold.text-xl Listado de Deuda en Cuenta Corriente
                 main
-                    p.py-2 Cliente: #{RAZONSOCIAL}
+                    p.py-2 Cliente: #{client[0].RAZONSOCIAL} 
                     h3.mt-5 Detalle
                     .overflow-auto.rounded-md.mt-5.border.border-zinc-200
                         table.w-full
@@ -31,15 +31,12 @@ html(lang="en")
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Pagado
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Saldo
                             tbody.divide-y
-                                tr
-                                    td.p-2.text-xs.text-gray-700 #{TIPOCOMPROBANTE}
-                                    td.p-2.text-xs.text-gray-700 #{NUMEROCOMPROBANTE}
-                                    td(class="p-2 text-xs text-gray-700")= formatDate(FECHACOMPROBANTE)
-                                    td(class="p-2 text-xs text-gray-700")= formatDate(FECHAVENCIMIENTO)
-                                    td.p-2.text-xs.text-gray-700 #{TOTAL}
-                                    td.p-2.text-xs.text-gray-700 #{PAGADO}
-                                    td.p-2.text-xs.text-gray-700 #{SALDO}        
-
-                    
-                
-            
+                                each val in client
+                                    tr
+                                        td.p-2.text-xs.text-gray-700 #{val.TIPOCOMPROBANTE}
+                                        td.p-2.text-xs.text-gray-700 #{val.NUMEROCOMPROBANTE}
+                                        td(class="p-2 text-xs text-gray-700")= formatDate(val.FECHACOMPROBANTE)
+                                        td(class="p-2 text-xs text-gray-700")= formatDate(val.FECHAVENCIMIENTO)
+                                        td.p-2.text-xs.text-gray-700 #{val.TOTAL}
+                                        td.p-2.text-xs.text-gray-700 #{val.PAGADO}
+                                        td.p-2.text-xs.text-gray-700 #{val.SALDO}

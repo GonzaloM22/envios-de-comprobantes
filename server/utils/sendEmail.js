@@ -52,10 +52,9 @@ const sendEmail = async (clients, config, rule) => {
   };
 
   (async () => {
-    //Recorremos las deudas y generamos un pdf por cada cliente
-    try {
-      let anterior;
-      return clients?.forEach(async (client) => {
+    const execute = async (client) => {
+      //Recorremos las deudas y generamos un pdf por cada cliente
+      try {
         const browser = await puppeteer.launch({
           args: ['--no-sandbox'],
         });
@@ -66,18 +65,18 @@ const sendEmail = async (clients, config, rule) => {
           .readFileSync(`${process.cwd()}\\/public/img/logoEmpresa.png`)
           .toString('base64');
         img = `data:image/png;base64,${img}`;
-        if (client.CODIGOPARTICULAR == anterior.CODIGOPARTICULAR) {
-          anterior = { ...anterior, client };
-        }
-        client = { ...client, img, formatDate };
 
-        /*const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
+        const content = await compile('deudas', {
+          client: client,
+          img: img,
+          formatDate: formatDate,
+        }); //Compilamos el template con los datos de la deuda del cliente
 
         await page.setContent(content, { waitUntil: 'networkidle0' });
         await page.emulateMediaType('print');
 
         //Guardamos el pdf en la ruta pathName
-        const pathName = `${client.RAZONSOCIAL} - ${Date.now()}.pdf`;
+        const pathName = `${client[0].RAZONSOCIAL} - ${Date.now()}.pdf`;
 
         await page.addStyleTag({ path: 'public/css/app.css' });
         await page.pdf({
@@ -105,12 +104,27 @@ const sendEmail = async (clients, config, rule) => {
         await browser.close();
 
         //Actualizamos fecha de ultimo envio en la base de datos
-        if (sent)*/
-        await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
-      });
-    } catch (error) {
-      throw false;
+        if (sent)
+          await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    let client = [];
+    for (let i = 0; i < clients?.length; i++) {
+      if (
+        clients[i].CODIGOPARTICULAR == client[0]?.CODIGOPARTICULAR ||
+        i === 0
+      ) {
+        client.push(clients[i]);
+      } else {
+        await execute(client);
+        client = [];
+        client.push(clients[i]);
+      }
     }
+    await execute(client);
   })();
 };
 
