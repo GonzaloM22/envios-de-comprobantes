@@ -16,7 +16,8 @@ const sendEmail = async (clients, config, rule) => {
     return pug.compile(html)(data);
   };
 
-  const sendPDF = async (fileName) => {
+  const sendPDF = async (fileName, email) => {
+    //return console.log(email);
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
     await nodemailer.createTestAccount();
@@ -36,7 +37,7 @@ const sendEmail = async (clients, config, rule) => {
     try {
       await transporter.sendMail({
         from: 'gonn.moreno@gmail.com', // sender address
-        to: 'gonn.m@hotmail.com', // list of receivers
+        to: email, // list of receivers
         subject: 'Saldo de Cuenta Corriente', // Subject line
         text: 'Cuenta Corriente', // plain text body
         html: '<p>Saldo pendiente en cuenta corriente.</p>', // html body
@@ -94,7 +95,7 @@ const sendEmail = async (clients, config, rule) => {
         const fileName = pathName;
 
         //Ejecutamos la funcion de enviar mediante Email
-        const sent = await sendPDF(fileName);
+        const sent = await sendPDF(fileName, client[0].EMAIL);
 
         //Eliminamos el pdf generado
         fs.unlink(pathName, (err) => {
