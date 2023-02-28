@@ -1,3 +1,4 @@
+- let totalcomprobantes=0
 doctype html
 html(lang="en")
     head
@@ -18,7 +19,7 @@ html(lang="en")
                 h2.mt-4.font-bold.text-xl Listado de Deuda en Cuenta Corriente
                 main
                     p.py-2 Cliente: #{client[0].RAZONSOCIAL} 
-                    h3.mt-5 Detalle
+                    h3.mt-5.text-sm Detalle
                     .overflow-auto.rounded-md.mt-5.border.border-zinc-200
                         table.w-full
                             thead.text-zinc-800
@@ -37,6 +38,8 @@ html(lang="en")
                                         td.p-2.text-xs.text-gray-700 #{val.NUMEROCOMPROBANTE}
                                         td(class="p-2 text-xs text-gray-700")= formatDate(val.FECHACOMPROBANTE)
                                         td(class="p-2 text-xs text-gray-700")= formatDate(val.FECHAVENCIMIENTO)
-                                        td.p-2.text-xs.text-gray-700 #{val.TOTAL}
-                                        td.p-2.text-xs.text-gray-700 #{val.PAGADO}
-                                        td.p-2.text-xs.text-gray-700 #{val.SALDO}
+                                        td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.TOTAL}
+                                        td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.PAGADO}
+                                        td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.SALDO}           
+                div.mt-24
+                    p Total Comprobantes:

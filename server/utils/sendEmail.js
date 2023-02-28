@@ -36,7 +36,7 @@ const sendEmail = async (clients, config, rule) => {
     // send mail with defined transport object
     try {
       await transporter.sendMail({
-        from: 'gonn.moreno@gmail.com', // sender address
+        from: EMAILREMITENTE, // sender address
         to: email, // list of receivers
         subject: 'Saldo de Cuenta Corriente', // Subject line
         text: 'Cuenta Corriente', // plain text body
@@ -68,9 +68,9 @@ const sendEmail = async (clients, config, rule) => {
         img = `data:image/png;base64,${img}`;
 
         const content = await compile('deudas', {
-          client: client,
-          img: img,
-          formatDate: formatDate,
+          client,
+          img,
+          formatDate,
         }); //Compilamos el template con los datos de la deuda del cliente
 
         await page.setContent(content, { waitUntil: 'networkidle0' });

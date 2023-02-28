@@ -5,6 +5,7 @@ const fs = require('fs');
 const pug = require('pug');
 const pdf2base64 = require('pdf-to-base64');
 const { updateLastSentDate } = require('../services/rulesService');
+const { formatDate } = require('../helpers');
 
 const sendWSP = async (clients, rule) => {
   const compile = async function (templateName, data) {
@@ -13,13 +14,13 @@ const sendWSP = async (clients, rule) => {
     return pug.compile(html)(data);
   };
 
-  const sendPdf = async (fileName) => {
+  const sendPdf = async (fileName, phone) => {
     //Convertimos el pdf a base 64
 
     try {
       pdf2base64(fileName).then(async (response) => {
         const file = response;
-        let phoneNumber = '';
+        let phoneNumber = `54${phone}`;
         let jsonFile = { file, phoneNumber };
 
         const body = {
@@ -48,9 +49,9 @@ const sendWSP = async (clients, rule) => {
   };
 
   (async () => {
-    //Recorremos las deudas y generamos un pdf por cada cliente
-    try {
-      return clients?.forEach(async (client) => {
+    const execute = async (client) => {
+      //Recorremos las deudas y generamos un pdf por cada cliente
+      try {
         const browser = await puppeteer.launch({
           args: ['--no-sandbox'],
         });
@@ -62,15 +63,17 @@ const sendWSP = async (clients, rule) => {
           .toString('base64');
         img = `data:image/png;base64,${img}`;
 
-        client = { ...client, img };
-
-        const content = await compile('deudas', client); //Compilamos el template con los datos de la deuda del cliente
+        const content = await compile('deudas', {
+          client,
+          img,
+          formatDate,
+        }); //Compilamos el template con los datos de la deuda del cliente
 
         await page.setContent(content, { waitUntil: 'networkidle0' });
         await page.emulateMediaType('print');
 
         //Guardamos el pdf en la ruta pathName
-        const pathName = `${client.RAZONSOCIAL} - ${Date.now()}.pdf`;
+        const pathName = `${client[0].RAZONSOCIAL} - ${Date.now()}.pdf`;
         await page.addStyleTag({ path: 'public/css/app.css' });
         await page.pdf({
           path: pathName,
@@ -87,7 +90,7 @@ const sendWSP = async (clients, rule) => {
         const fileName = pathName;
 
         //Ejecutamos la funcion de enviar mediante whatsapp
-        await sendPdf(fileName);
+        await sendPdf(fileName, client[0].TELEFONO);
 
         //Eliminamos el pdf generado
         fs.unlink(pathName, (err) => {
@@ -97,10 +100,25 @@ const sendWSP = async (clients, rule) => {
         await browser.close();
 
         await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
-      });
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    let client = [];
+    for (let i = 0; i < clients?.length; i++) {
+      if (
+        clients[i].CODIGOPARTICULAR == client[0]?.CODIGOPARTICULAR ||
+        i === 0
+      ) {
+        client.push(clients[i]);
+      } else {
+        await execute(client);
+        client = [];
+        client.push(clients[i]);
+      }
     }
+    await execute(client);
   })();
 };
 
