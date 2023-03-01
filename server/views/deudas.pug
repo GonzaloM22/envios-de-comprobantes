@@ -1,4 +1,3 @@
-- let totalcomprobantes=0
 doctype html
 html(lang="en")
     head
@@ -6,7 +5,7 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         link(rel="stylesheet", href="/css/app.css")
-    body.min-hscreen
+    body.h-screen
         div
             header
                 .w-40
@@ -20,12 +19,12 @@ html(lang="en")
                 main
                     p.py-2 Cliente: #{client[0].RAZONSOCIAL} 
                     h3.mt-5.text-sm Detalle
-                    .overflow-auto.rounded-md.mt-5.border.border-zinc-200
+                    div.overflow-auto.rounded-md.mt-5.border.border-zinc-200
                         table.w-full
                             thead.text-zinc-800
                                 tr.border-b
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Tipo
-                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Numero
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Número
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Fecha Comp.
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Fecha Vto.
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Total
@@ -40,6 +39,6 @@ html(lang="en")
                                         td(class="p-2 text-xs text-gray-700")= formatDate(val.FECHAVENCIMIENTO)
                                         td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.TOTAL}
                                         td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.PAGADO}
-                                        td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.SALDO}           
-                div.mt-24
-                    p Total Comprobantes:
+                                        td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.SALDO}         
+                    div(class="mt-5 text-sm")
+                        p Total Comprobantes: #{client[0].SIMBOLO}#{totalcomprobantes}

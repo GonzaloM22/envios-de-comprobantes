@@ -67,8 +67,14 @@ const sendEmail = async (clients, config, rule) => {
           .toString('base64');
         img = `data:image/png;base64,${img}`;
 
+        let totalcomprobantes = 0;
+        client.forEach(
+          (c) => (totalcomprobantes = totalcomprobantes + c.TOTAL - c.PAGADO)
+        );
+
         const content = await compile('deudas', {
           client,
+          totalcomprobantes,
           img,
           formatDate,
         }); //Compilamos el template con los datos de la deuda del cliente
