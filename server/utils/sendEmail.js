@@ -5,6 +5,7 @@ const fs = require('fs');
 const pug = require('pug');
 const { updateLastSentDate } = require('../services/rulesService');
 const { formatDate } = require('../helpers');
+const { generateQR } = require('./qrAfip');
 
 // async..await is not allowed in global scope, must use a wrapper
 const sendEmail = async (clients, config, rule) => {
@@ -54,6 +55,21 @@ const sendEmail = async (clients, config, rule) => {
 
   (async () => {
     const execute = async (client) => {
+      return console.log(client);
+      const { FECHACOMPROBANTE, CUIT, NUMEROCOMPROBANTE, TOTAL } = client;
+      return generateQR(
+        FECHACOMPROBANTE,
+        CUITEMPRESA,
+        NUMEROCOMPROBANTE,
+        CODIGOCOMPROBANTEAFIP,
+        TOTALBRUTO,
+        CODIGOMONEDAAFIP,
+        COTIZACION,
+        CODIGOTIPOAUTORIZACION,
+        NUMEROCAE,
+        CODIGODOCUMENTOAFIP,
+        CUITRECEPTOR
+      );
       //Recorremos las deudas y generamos un pdf por cada cliente
       try {
         const browser = await puppeteer.launch({
@@ -67,19 +83,28 @@ const sendEmail = async (clients, config, rule) => {
           .toString('base64');
         img = `data:image/png;base64,${img}`;
 
-        let totalcomprobantes = 0;
-        client.forEach(
-          (c) => (totalcomprobantes = totalcomprobantes + c.TOTAL - c.PAGADO)
-        );
+        if (client[0].CAE) {
+          const content = await compile('factura', {
+            client,
+            img,
+            formatDate,
+          }); //Compilamos el template con los datos de la deuda del cliente
+          await page.setContent(content, { waitUntil: 'networkidle0' });
+        } else {
+          let totalcomprobantes = 0;
+          client.forEach(
+            (c) => (totalcomprobantes = totalcomprobantes + c.TOTAL - c.PAGADO)
+          );
 
-        const content = await compile('deudas', {
-          client,
-          totalcomprobantes,
-          img,
-          formatDate,
-        }); //Compilamos el template con los datos de la deuda del cliente
+          const content = await compile('deudas', {
+            client,
+            totalcomprobantes,
+            img,
+            formatDate,
+          }); //Compilamos el template con los datos de la deuda del cliente
+          await page.setContent(content, { waitUntil: 'networkidle0' });
+        }
 
-        await page.setContent(content, { waitUntil: 'networkidle0' });
         await page.emulateMediaType('print');
 
         //Guardamos el pdf en la ruta pathName

@@ -1,0 +1,48 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="/css/app.css")
+    body.h-screen
+        div
+            header
+                .w-40
+                    img.object-cover(src=`${img}`, alt="Logo")
+                h1.text-xl.font-bold.mt-4 Flexxus S.A. 
+                p.text-sm.py-2 Humberto Primo 843 - Cordoba Capital
+                .flex.items-center.justify-between.border-b
+                    p.text-sm.mb-2 Tel: 0351-5685000
+                    p.mb-2.text-sm Fecha: 02/03/2023
+                main
+                    ul.border-b.text-sm.py-3.space-y-2
+                        li Cliente: Cliente de prueba
+                        li Domicilio: Domicilio de prueba
+                        li Telefono: 3512515250
+                        li CUIT: 30-20999547-0
+                    div.overflow-auto.rounded-md.mt-5.border.border-zinc-200
+                        table.w-full
+                            thead.text-zinc-800
+                                tr.border-b
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Código
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Descripción 
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Cantidad
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Precio Unit.
+                                    th.p-2.text-xs.font-bold.tracking-wide.text-left Total
+                            tbody.divide-y
+                                    tr
+                                        td.p-2.text-xs.text-gray-700 31919
+                                        td.p-2.text-xs.text-gray-700 B DE BESTIAS
+                                        td(class="p-2 text-xs text-gray-700 space-y-2")= 1
+                                        td.p-2.text-xs.text-gray-700 $2500
+                                        td.p-2.text-xs.text-gray-700 $2500
+                    div(class="flex justify-between mt-5 text-sm mb-16")
+                        div
+                            p Observaciones:
+                        div.space-y-2.text-sm
+                            p IVA: 0
+                            p Total: $2500
+                    div.text-sm.space-y-1
+                        p CAE: 256465265565682302687
+                        p Vto. CAE: 02/03/2023

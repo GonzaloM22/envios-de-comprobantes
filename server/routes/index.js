@@ -25,6 +25,6 @@ router
   .delete(deleteRule);
 router.route('/config').post(newConfig).get(getConfigs).put(updateConfig);
 
-router.get('/deudas', (req, res) => res.render('deudas'));
+router.get('/factura', (req, res) => res.render('factura'));
 
 module.exports = router;

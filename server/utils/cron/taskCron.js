@@ -1,4 +1,5 @@
 const { clientsService } = require('../../services/clientsService');
+const { invoiceService } = require('../../services/invoiceService');
 const { sendWSP } = require('../sendWSP');
 const { sendEmail } = require('../sendEmail');
 const { getRulesService } = require('../../services/rulesService');
@@ -25,13 +26,26 @@ const task = async (req, res) => {
         rule.CODIGOMEDIOENVIO === 2 &&
         rule.CANTIDADDIAS > rule.RECORDATORIO
       ) {
-        const response = await clientsService(); //Traemos todas las deudas de los clientes
-        const clients = response.clients;
         const config = await getConfigsService(); //Traemos las configuraciones del Email
         const configEmail = config.configs.filter(
           (value) => value.CODIGOMEDIOENVIO === 2
         );
-        await sendEmail(clients, configEmail[0], rule);
+
+        switch (rule.CODIGOTIPOENVIO) {
+          case 1: //Deudas Totales
+            const response = await clientsService(); //Traemos todas las deudas de los clientes
+            const clients = response.clients;
+            await sendEmail(clients, configEmail[0], rule);
+            break;
+          case 2: //Facturas
+            const responseInvoices = await invoiceService(); //Traemos todas las deudas de los clientes
+            const invoices = responseInvoices.invoices;
+            await sendEmail(invoices, configEmail[0], rule);
+
+            break;
+          default:
+            break;
+        }
       }
     });
   } catch (error) {
