@@ -8,8 +8,15 @@ html(lang="en")
     body.h-screen
         div
             header
-                .w-40
-                    img.object-cover(src=`${img}`, alt="Logo")
+                .flex.justify-between
+                    .w-40
+                        img.object-cover(src=`${img}`, alt="Logo")
+                    div
+                        p.border.rounded-xl.p-2.text-4xl.text-center.font-bold.border-zinc-700 A 
+                        p.text-xs Cod. n° 001
+                    div.space-y-2
+                        p.text-xl Factura
+                        p 0001-00000050
                 h1.text-xl.font-bold.mt-4 Flexxus S.A. 
                 p.text-sm.py-2 Humberto Primo 843 - Cordoba Capital
                 .flex.items-center.justify-between.border-b
@@ -39,10 +46,13 @@ html(lang="en")
                                         td.p-2.text-xs.text-gray-700 $2500
                     div(class="flex justify-between mt-5 text-sm mb-16")
                         div
-                            p Observaciones:
+                            p Observaciones: Esto es un comprobante de prueba
                         div.space-y-2.text-sm
-                            p IVA: 0
+                            p IVA: $0
                             p Total: $2500
-                    div.text-sm.space-y-1
-                        p CAE: 256465265565682302687
-                        p Vto. CAE: 02/03/2023
+                    div(class="flex justify-end items-center space-x-14")
+                        div(class="text-sm space-y-1")
+                            p CAE: 256465265565682302687
+                            p Vto. CAE: 02/03/2023
+                        div
+                            img.object-cover(src=`${qrCode}` alt="qr" style='width:150px;height:150px;')

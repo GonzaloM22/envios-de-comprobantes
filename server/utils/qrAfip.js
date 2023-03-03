@@ -1,21 +1,24 @@
 const QRCode = require('qrcode');
 const { formatDate } = require('../helpers');
 
-const generateQR = (
-  FECHACOMPROBANTE,
-  CUITEMPRESA,
-  NUMEROCOMPROBANTE,
-  CODIGOCOMPROBANTEAFIP,
-  TOTALBRUTO,
-  CODIGOMONEDAAFIP,
-  COTIZACION,
-  CODIGOTIPOAUTORIZACION,
-  NUMEROCAE,
-  CODIGODOCUMENTOAFIP,
-  CUITRECEPTOR,
-  VERSION = 1,
-  level = 'L'
-) => {
+const generateQR = async (data) => {
+  const {
+    FECHACOMPROBANTE,
+    CUITEMPRESA,
+    NUMEROCOMPROBANTE,
+    CODIGOCOMPROBANTEAFIP,
+    TOTALBRUTO,
+    CODIGOMONEDAAFIP,
+    COTIZACION,
+    CODIGOTIPOAUTORIZACION,
+    NUMEROCAE,
+    CUITRECEPTOR,
+  } = data[0];
+
+  const CODIGODOCUMENTOAFIP = 80;
+  const VERSION = 1;
+  const level = 'L';
+
   let levelParameter = level.toString().toUpperCase();
   const levelsArray = ['L', 'M', 'Q', 'H'];
 
@@ -49,13 +52,17 @@ const generateQR = (
     codAut: parseInt(NUMEROCAE),
   };
 
-  return console.log(qrObject);
-
   const qrString = JSON.stringify(qrObject);
+  const qrBase64 = btoa(qrString);
+  const afipURL = 'https://www.afip.gob.ar/fe/qr/?p=' + qrBase64;
 
-  QRCode.toString('I am a pony!', { type: 'terminal' }, function (err, url) {
-    console.log(url);
-  });
+  let qr;
+  try {
+    qr = await QRCode.toDataURL(afipURL);
+  } catch (err) {
+    console.error(err);
+  }
+  return qr;
 };
 
 module.exports = { generateQR };

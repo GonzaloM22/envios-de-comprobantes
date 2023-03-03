@@ -55,21 +55,6 @@ const sendEmail = async (clients, config, rule) => {
 
   (async () => {
     const execute = async (client) => {
-      return console.log(client);
-      const { FECHACOMPROBANTE, CUIT, NUMEROCOMPROBANTE, TOTAL } = client;
-      return generateQR(
-        FECHACOMPROBANTE,
-        CUITEMPRESA,
-        NUMEROCOMPROBANTE,
-        CODIGOCOMPROBANTEAFIP,
-        TOTALBRUTO,
-        CODIGOMONEDAAFIP,
-        COTIZACION,
-        CODIGOTIPOAUTORIZACION,
-        NUMEROCAE,
-        CODIGODOCUMENTOAFIP,
-        CUITRECEPTOR
-      );
       //Recorremos las deudas y generamos un pdf por cada cliente
       try {
         const browser = await puppeteer.launch({
@@ -83,12 +68,15 @@ const sendEmail = async (clients, config, rule) => {
           .toString('base64');
         img = `data:image/png;base64,${img}`;
 
-        if (client[0].CAE) {
+        if (client[0].NUMEROCAE) {
+          const qrCode = await generateQR(client);
           const content = await compile('factura', {
+            //Compilamos el template con los datos de la deuda del cliente
             client,
             img,
+            qrCode,
             formatDate,
-          }); //Compilamos el template con los datos de la deuda del cliente
+          });
           await page.setContent(content, { waitUntil: 'networkidle0' });
         } else {
           let totalcomprobantes = 0;
