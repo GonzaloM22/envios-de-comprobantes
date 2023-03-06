@@ -1,0 +1,93 @@
+create or alter procedure INT_FACTURAS
+returns (
+    TIPOCOMPROBANTE varchar(15),
+    NUMEROCOMPROBANTE double precision,
+    CODIGOPARTICULAR varchar(40),
+    FECHACOMPROBANTE date,
+    FECHAVENCIMIENTO date,
+    RAZONSOCIAL varchar(100),
+    CUITRECEPTOR varchar(20),
+    DIRECCION varchar(150),
+    PORCIVA1 double precision,
+    PORCIVA2 double precision,
+    IVA1 double precision,
+    IVA2 double precision,
+    SUBTOTAL double precision,
+    TOTALBRUTO double precision,
+    COTIZACION double precision,
+    CODIGOCOMPROBANTEAFIP varchar(15),
+    CODIGOMONEDAAFIP varchar(10),
+    CODIGODOCUMENTOAFIP varchar(10),
+    CODIGOTIPOAUTORIZACION varchar(10),
+    COMENTARIOS varchar(2000),
+    EXENTO double precision,
+    NUMEROCAE varchar(50),
+    VENCIMIENTOCAE date,
+    EMAIL varchar(2000),
+    TELEFONO varchar(50),
+    CUITEMPRESA varchar(20),
+    LETRACOMPROBANTE varchar(10),
+    NOMBRECOMPROBANTE varchar(30),
+    CODIGOPARTICULARARTICULO varchar(40),
+    DESCRIPCION varchar(250),
+    CANTIDAD double precision,
+    PRECIOUNITARIO double precision,
+    PRECIOTOTAL double precision,
+    TIPOIVA varchar(50))
+as
+begin
+
+  for select distinct CA.TIPOCOMPROBANTE, CA.NUMEROCOMPROBANTE, C.CODIGOPARTICULAR, CA.FECHACOMPROBANTE,
+                      CA.FECHAVENCIMIENTO, CA.RAZONSOCIAL, CA.CUIT, CA.DIRECCION, CA.PORCIVA1, CA.PORCIVA2,
+                      round(trunc(CA.IVA1, 2), 1), round(trunc(CA.IVA2, 2), 1), round(trunc(CA.TOTAL, 2), 1),
+                      round(trunc(CA.TOTAL + CA.IVA1 + CA.IVA2, 2), 1), CA.COMENTARIOS, CA.COTIZACION,
+                      TC.CODIGOTIPOCOMPROBANTE, M.CODIGOMONEDAAFIP,
+                      case
+                        when T.REQUIERECUIT = 1 then 80
+                        else 96
+                      end,
+                      CA.EXENTO, CAE.CAE, CAE.VENCIMIENTOCAE, C.EMAIL, CA.TELEFONO, S.CUIT,
+                      case
+                        when P.CAEANTICIPADO = 0 then 'E'
+                        else 'A'
+                      end,
+                      case
+                        when CA.TIPOCOMPROBANTE like '%F%' then substring(CA.TIPOCOMPROBANTE from 2 for 2)
+                        else substring(CA.TIPOCOMPROBANTE from 3 for 3)
+                      end,
+                      case
+                        when CA.TIPOCOMPROBANTE like '%F%' then 'Factura'
+                        when CA.TIPOCOMPROBANTE like '%NC%' then 'Nota de Credito'
+                        when CA.TIPOCOMPROBANTE like '%ND%' then 'Nota de Debito'
+                      end,
+                      A.CODIGOPARTICULAR, CC.DESCRIPCION, CC.CANTIDAD, round(trunc(CC.PRECIOUNITARIO, 2), 1),
+                      round(trunc(CC.PRECIOTOTAL, 1), 1), T.DESCRIPCION
+
+      from CABEZACOMPROBANTES CA
+      inner join CUERPOCOMPROBANTES CC on CA.NUMEROCOMPROBANTE = CC.NUMEROCOMPROBANTE and CA.TIPOCOMPROBANTE = CC.TIPOCOMPROBANTE
+      inner join CLIENTES C on C.CODIGOCLIENTE = CA.CODIGOCLIENTE
+      inner join CAEAFIP CAE on (CA.TIPOCOMPROBANTE = CAE.TIPOCOMPROBANTE and CA.NUMEROCOMPROBANTE = CAE.NUMEROCOMPROBANTE and CAE.CAE <> "")
+      inner join MONEDAS M on M.CODIGOMONEDA = CA.CODIGOMONEDA
+      inner join TIPOSCOMPROBANTES TC on TC.COMPROBANTE = CA.TIPOCOMPROBANTE
+      inner join SUCURSALES S on S.CODIGOSUCURSAL = 'PRINCIPAL'
+      inner join PUNTOSDEVENTA P on P.NUMERACION = CA.NROPUNTODEVENTA
+      inner join ARTICULOS A on A.CODIGOARTICULO = CC.CODIGOARTICULO
+      inner join TIPOIVA T on CA.TIPOIVA = T.CODIGOTIPO
+      where CA.ANULADA = 0 and
+            ((CA.NUMEROCOMPROBANTE between 900000000 and 1000000000) or (CA.NUMEROCOMPROBANTE between 1400000000 and 1500000000)) and
+            (CA.TIPOCOMPROBANTE = '' or CA.TIPOCOMPROBANTE = 'FA' or CA.TIPOCOMPROBANTE = 'FB' or CA.TIPOCOMPROBANTE = 'FC' or CA.TIPOCOMPROBANTE = 'FM' or CA.TIPOCOMPROBANTE = 'FT' or CA.TIPOCOMPROBANTE = 'FCA' or CA.TIPOCOMPROBANTE = 'FCB' or CA.TIPOCOMPROBANTE = 'FCC' or CA.TIPOCOMPROBANTE = 'NDA' or CA.TIPOCOMPROBANTE = 'NDB' or CA.TIPOCOMPROBANTE = 'NDC' or CA.TIPOCOMPROBANTE = 'NDM' or CA.TIPOCOMPROBANTE = 'NDT' or CA.TIPOCOMPROBANTE = 'NDCA' or CA.TIPOCOMPROBANTE = 'NDCB' or CA.TIPOCOMPROBANTE = 'NDCC' or CA.TIPOCOMPROBANTE = 'NCA' or CA.TIPOCOMPROBANTE = 'NCB' or CA.TIPOCOMPROBANTE = 'NCC' or CA.TIPOCOMPROBANTE = 'NCM' or CA.TIPOCOMPROBANTE = 'NCT' or CA.TIPOCOMPROBANTE = 'NCCA' or CA.TIPOCOMPROBANTE = 'NCCB' or CA.TIPOCOMPROBANTE = 'NCCC' or CA.TIPOCOMPROBANTE = 'LQA' or CA.TIPOCOMPROBANTE = 'LQB' or CA.TIPOCOMPROBANTE = 'LQC' or CA.TIPOCOMPROBANTE = 'LQM' or CA.TIPOCOMPROBANTE = 'LQT' or CA.TIPOCOMPROBANTE = 'RF' or CA.TIPOCOMPROBANTE = 'T' or CA.TIPOCOMPROBANTE = 'LPG') and
+            CA.NUMEROCOMPROBANTE = '1400000003' and
+            CA.TIPOCOMPROBANTE = 'FB'
+      order by CA.FECHACOMPROBANTE, CA.NUMEROCOMPROBANTE, CA.TIPOCOMPROBANTE
+
+      into :TIPOCOMPROBANTE, :NUMEROCOMPROBANTE, :CODIGOPARTICULAR, :FECHACOMPROBANTE, :FECHAVENCIMIENTO, :RAZONSOCIAL,
+           :CUITRECEPTOR, :DIRECCION, :PORCIVA1, :PORCIVA2, :IVA1, :IVA2, :SUBTOTAL, :TOTALBRUTO, :COMENTARIOS,
+           :COTIZACION, :CODIGOCOMPROBANTEAFIP, :CODIGOMONEDAAFIP, :CODIGODOCUMENTOAFIP, :EXENTO, :NUMEROCAE,
+           :VENCIMIENTOCAE, :EMAIL, :TELEFONO, :CUITEMPRESA, :CODIGOTIPOAUTORIZACION, :LETRACOMPROBANTE,
+           :NOMBRECOMPROBANTE, :CODIGOPARTICULARARTICULO, :DESCRIPCION, :CANTIDAD, :PRECIOUNITARIO, :PRECIOTOTAL,
+           :TIPOIVA
+  do
+  begin
+    suspend;
+  end
+end

@@ -12,22 +12,33 @@ html(lang="en")
                     .w-40
                         img.object-cover(src=`${img}`, alt="Logo")
                     div
-                        p.border.rounded-xl.p-2.text-4xl.text-center.font-bold.border-zinc-700 A 
-                        p.text-xs Cod. n° 001
+                        p.border.rounded-xl.p-3.text-4xl.text-center.font-bold.border-zinc-700 #{client[0].LETRACOMPROBANTE} 
+                        p.text-xs Cod. n° #{client[0].CODIGOCOMPROBANTEAFIP}
                     div.space-y-2
-                        p.text-xl Factura
-                        p 0001-00000050
+                        p.text-2xl.font-bold #{client[0].NOMBRECOMPROBANTE} #{client[0].LETRACOMPROBANTE}
+                        p.text-sm Num: #{client[0].NUMEROCOMPROBANTE}
                 h1.text-xl.font-bold.mt-4 Flexxus S.A. 
                 p.text-sm.py-2 Humberto Primo 843 - Cordoba Capital
                 .flex.items-center.justify-between.border-b
-                    p.text-sm.mb-2 Tel: 0351-5685000
-                    p.mb-2.text-sm Fecha: 02/03/2023
+                    p.text-sm.mb-2 Tel: 4685000
+                    p.text-sm Fecha: 
+                        span(class="mb-2")= formatDate(client[0].FECHACOMPROBANTE)
                 main
-                    ul.border-b.text-sm.py-3.space-y-2
-                        li Cliente: Cliente de prueba
-                        li Domicilio: Domicilio de prueba
-                        li Telefono: 3512515250
-                        li CUIT: 30-20999547-0
+                    div.flex.justify-between.border-b
+                        ul.text-sm.py-3.space-y-2
+                            li.font-semibold Cliente: 
+                                span.font-normal #{client[0].RAZONSOCIAL}
+                            li.font-semibold Domicilio: 
+                                span.font-normal #{client[0].DIRECCION}
+                            li.font-semibold Teléfono: 
+                                span.font-normal #{client[0].TELEFONO}
+                            li.font-semibold CUIT/DNI: 
+                                span.font-normal #{client[0].CUITRECEPTOR}
+                        ul.text-sm.py-3.space-y-2
+                            li.font-semibold Condición de IVA: 
+                                span.font-normal #{client[0].TIPOIVA}
+                            li.font-semibold Fecha de Vencimiento: 
+                                span(class="font-normal")= formatDate(client[0].FECHAVENCIMIENTO)
                     div.overflow-auto.rounded-md.mt-5.border.border-zinc-200
                         table.w-full
                             thead.text-zinc-800
@@ -38,21 +49,29 @@ html(lang="en")
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Precio Unit.
                                     th.p-2.text-xs.font-bold.tracking-wide.text-left Total
                             tbody.divide-y
+                                each articulo in client
                                     tr
-                                        td.p-2.text-xs.text-gray-700 31919
-                                        td.p-2.text-xs.text-gray-700 B DE BESTIAS
-                                        td(class="p-2 text-xs text-gray-700 space-y-2")= 1
-                                        td.p-2.text-xs.text-gray-700 $2500
-                                        td.p-2.text-xs.text-gray-700 $2500
+                                        td.p-2.text-xs.text-gray-700 #{articulo.CODIGOPARTICULARARTICULO}
+                                        td.p-2.text-xs.text-gray-700 #{articulo.DESCRIPCION}
+                                        td(class="p-2 text-xs text-gray-700 space-y-2")= articulo.CANTIDAD
+                                        td.p-2.text-xs.text-gray-700 $ #{articulo.PRECIOUNITARIO}
+                                        td.p-2.text-xs.text-gray-700 $ #{articulo.PRECIOTOTAL}
                     div(class="flex justify-between mt-5 text-sm mb-16")
                         div
-                            p Observaciones: Esto es un comprobante de prueba
+                            p.font-semibold Observaciones: 
+                                span.font-normal #{client[0].COMENTARIOS}
                         div.space-y-2.text-sm
-                            p IVA: $0
-                            p Total: $2500
+                            p.font-semibold SubTotal: 
+                                span.font-normal $ #{client[0].SUBTOTAL}
+                            p.font-semibold IVA: 
+                                span.font-normal $ #{client[0].IVA1 + client[0].IVA2}
+                            p.font-semibold Total: 
+                                span.font-normal $ #{client[0].TOTALBRUTO}
                     div(class="flex justify-end items-center space-x-14")
                         div(class="text-sm space-y-1")
-                            p CAE: 256465265565682302687
-                            p Vto. CAE: 02/03/2023
+                            p.font-semibold CAE: 
+                                span.font-normal #{client[0].NUMEROCAE}
+                            p.font-semibold Vto. CAE: 
+                                span(class="font-normal")= formatDate(client[0].VENCIMIENTOCAE)
                         div
                             img.object-cover(src=`${qrCode}` alt="qr" style='width:150px;height:150px;')

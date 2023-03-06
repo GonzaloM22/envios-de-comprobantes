@@ -11,11 +11,11 @@ const generateQR = async (data) => {
     CODIGOMONEDAAFIP,
     COTIZACION,
     CODIGOTIPOAUTORIZACION,
+    CODIGODOCUMENTOAFIP,
     NUMEROCAE,
     CUITRECEPTOR,
   } = data[0];
 
-  const CODIGODOCUMENTOAFIP = 80;
   const VERSION = 1;
   const level = 'L';
 
@@ -38,7 +38,11 @@ const generateQR = async (data) => {
 
   let qrObject = {
     ver: VERSION,
-    fecha: formatDate(FECHACOMPROBANTE).replaceAll('/', '-'),
+    fecha: formatDate(FECHACOMPROBANTE)
+      .replaceAll('/', '-')
+      .split('')
+      .reverse()
+      .join(''),
     cuit: parseInt(CUITEMPRESA.replaceAll('-', '')),
     ptoVta,
     tipoCmp: parseInt(CODIGOCOMPROBANTEAFIP),
@@ -46,11 +50,13 @@ const generateQR = async (data) => {
     importe: parseFloat(TOTALBRUTO.toFixed(2)) * 100,
     moneda: CODIGOMONEDAAFIP || 'PES',
     ctz: COTIZACION,
-    tipoDocRec: CODIGODOCUMENTOAFIP,
+    tipoDocRec: Number(CODIGODOCUMENTOAFIP),
     nroDocRec: parseInt(CUITRECEPTOR.replaceAll('-', '')),
     tipoCodAut: CODIGOTIPOAUTORIZACION.trim(),
     codAut: parseInt(NUMEROCAE),
   };
+
+  console.log(qrObject);
 
   const qrString = JSON.stringify(qrObject);
   const qrBase64 = btoa(qrString);
