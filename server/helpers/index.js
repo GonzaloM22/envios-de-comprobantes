@@ -10,4 +10,5 @@ const formatDate = (fecha) => {
 
   return newDate.toLocaleDateString('es-ES', options);
 };
+
 module.exports = { formatDate };

@@ -7,6 +7,7 @@ const newRuleService = async (rule) => {
     codigotipoenvio,
     codigomedioenvio,
     recordatorio,
+    mensaje,
     activo,
     confirmado,
   } = rule;
@@ -18,8 +19,8 @@ const newRuleService = async (rule) => {
     fechaultimoenvio = 'current_timestamp';
   }
 
-  const sql = `insert into INT_REGLAS (CODIGOREGLA, CODIGOTIPOENVIO, CODIGOMEDIOENVIO, RECORDATORIO, ACTIVO, FECHAULTIMOENVIO)
-  values (gen_id(AUXILIAR,1), ${codigotipoenvio}, ${codigomedioenvio}, ${recordatorio}, ${activo}, ${fechaultimoenvio})`;
+  const sql = `insert into INT_REGLAS (CODIGOREGLA, CODIGOTIPOENVIO, CODIGOMEDIOENVIO, RECORDATORIO, MENSAJE, ACTIVO, FECHAULTIMOENVIO)
+  values (gen_id(AUXILIAR,1), ${codigotipoenvio}, ${codigomedioenvio}, ${recordatorio}, ${mensaje}, ${activo}, ${fechaultimoenvio})`;
 
   return new Promise((resolve, reject) => {
     firebird.attach(options, function (err, db) {
@@ -70,6 +71,7 @@ const updateRuleService = async (rule) => {
     codigotipoenvio,
     codigomedioenvio,
     recordatorio,
+    mensaje,
     activo,
     confirmado,
   } = rule;
@@ -77,11 +79,19 @@ const updateRuleService = async (rule) => {
   let sql;
   let fechaultimoenvio;
 
-  if (confirmado) {
-    fechaultimoenvio = "'01/01/1900'";
-    sql = `update INT_REGLAS set FECHAULTIMOENVIO = ${fechaultimoenvio}, ACTIVO = 1 where CODIGOREGLA = ${CODIGOREGLA}`;
-  } else {
-    sql = `update INT_REGLAS set CODIGOTIPOENVIO = ${codigotipoenvio}, CODIGOMEDIOENVIO = ${codigomedioenvio}, RECORDATORIO = ${recordatorio}, ACTIVO = ${activo} where CODIGOREGLA = ${CODIGOREGLA}`;
+  switch (confirmado) {
+    case true:
+      if (codigomedioenvio) {
+        fechaultimoenvio = "'01/01/1900'";
+        sql = `update INT_REGLAS set CODIGOTIPOENVIO = ${codigotipoenvio}, CODIGOMEDIOENVIO = ${codigomedioenvio}, RECORDATORIO = ${recordatorio}, MENSAJE = '${mensaje}', ACTIVO = ${activo}, FECHAULTIMOENVIO = ${fechaultimoenvio} where CODIGOREGLA = ${CODIGOREGLA}`;
+      } else {
+        fechaultimoenvio = "'01/01/1900'";
+        sql = `update INT_REGLAS set FECHAULTIMOENVIO = ${fechaultimoenvio} where CODIGOREGLA = ${CODIGOREGLA}`;
+      }
+      break;
+    default:
+      sql = `update INT_REGLAS set CODIGOTIPOENVIO = ${codigotipoenvio}, CODIGOMEDIOENVIO = ${codigomedioenvio}, RECORDATORIO = ${recordatorio}, MENSAJE = '${mensaje}', ACTIVO = ${activo} where CODIGOREGLA = ${CODIGOREGLA}`;
+      break;
   }
 
   return new Promise((resolve, reject) => {

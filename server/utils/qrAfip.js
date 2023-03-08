@@ -1,5 +1,6 @@
 const QRCode = require('qrcode');
 const { formatDate } = require('../helpers');
+const { DateTime } = require('luxon');
 
 const generateQR = async (data) => {
   const {
@@ -35,19 +36,17 @@ const generateQR = async (data) => {
 
   const ptoVta = parseInt(stringNumber.substring(0, 5));
   const nroCmp = parseInt(stringNumber.substring(5));
-
+  const date = DateTime.fromISO(new Date(FECHACOMPROBANTE).toISOString());
+  console.log();
   let qrObject = {
     ver: VERSION,
-    fecha: formatDate(FECHACOMPROBANTE)
-      .replaceAll('/', '-')
-      .split('')
-      .reverse()
-      .join(''),
+    fecha: date.toFormat('yyyy-MM-dd'),
+
     cuit: parseInt(CUITEMPRESA.replaceAll('-', '')),
     ptoVta,
     tipoCmp: parseInt(CODIGOCOMPROBANTEAFIP),
     nroCmp,
-    importe: parseFloat(TOTALBRUTO.toFixed(2)) * 100,
+    importe: parseFloat(TOTALBRUTO.toFixed(2)),
     moneda: CODIGOMONEDAAFIP || 'PES',
     ctz: COTIZACION,
     tipoDocRec: Number(CODIGODOCUMENTOAFIP),
@@ -55,8 +54,6 @@ const generateQR = async (data) => {
     tipoCodAut: CODIGOTIPOAUTORIZACION.trim(),
     codAut: parseInt(NUMEROCAE),
   };
-
-  console.log(qrObject);
 
   const qrString = JSON.stringify(qrObject);
   const qrBase64 = btoa(qrString);

@@ -60,6 +60,7 @@ const sendEmail = async (clients, config, rule) => {
         const browser = await puppeteer.launch({
           args: ['--no-sandbox'],
         });
+
         const page = await browser.newPage();
 
         //Convertimos la imagen a base 64
@@ -67,6 +68,12 @@ const sendEmail = async (clients, config, rule) => {
           .readFileSync(`${process.cwd()}\\/public/img/logoEmpresa.png`)
           .toString('base64');
         img = `data:image/png;base64,${img}`;
+
+        let totalcomprobantes = 0;
+        client.forEach(
+          (element) => (totalcomprobantes = totalcomprobantes + element.SALDO)
+        );
+        client[0] = { ...client[0], totalcomprobantes };
 
         if (client[0].NUMEROCAE) {
           const qrCode = await generateQR(client);

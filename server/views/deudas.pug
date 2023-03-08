@@ -14,10 +14,10 @@ html(lang="en")
                 p.text-sm.py-2 Humberto Primo 843 - Cordoba Capital
                 .flex.items-center.justify-between.border-b-2
                     p.text-sm.mb-2 Tel: 0351-5685000
-                    p.mb-2 Fecha: 22/02/2023
+                    p.mb-2.text-sm Fecha: 22/02/2023
                 h2.mt-4.font-bold.text-xl Listado de Deuda en Cuenta Corriente
                 main
-                    p.py-2 Cliente: #{client[0].RAZONSOCIAL} 
+                    p.py-2.text-sm Cliente: #{client[0].RAZONSOCIAL} 
                     h3.mt-5.text-sm Detalle
                     div.overflow-auto.rounded-md.mt-5.border.border-zinc-200
                         table.w-full
@@ -41,4 +41,4 @@ html(lang="en")
                                         td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.PAGADO}
                                         td.p-2.text-xs.text-gray-700 #{val.SIMBOLO}#{val.SALDO}         
                     div(class="mt-5 text-sm")
-                        p Total Comprobantes: #{client[0].SIMBOLO}#{totalcomprobantes}
+                        p Total Comprobantes: #{client[0].SIMBOLO} #{client[0].totalcomprobantes}

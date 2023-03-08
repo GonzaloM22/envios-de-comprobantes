@@ -1,0 +1,48 @@
+create or alter procedure INT_DEUDAS
+returns (
+    TIPOCOMPROBANTE varchar(15),
+    NUMEROCOMPROBANTE double precision,
+    CODIGOPARTICULAR varchar(40),
+    RAZONSOCIAL varchar(100),
+    FECHACOMPROBANTE date,
+    FECHAVENCIMIENTO date,
+    SIMBOLO varchar(10),
+    PAGADO double precision,
+    SALDO double precision,
+    TOTAL double precision,
+    TOTALCOMPROBANTES double precision,
+    CUIT varchar(20),
+    EMAIL varchar(2000),
+    TELEFONO varchar(50))
+as
+begin
+
+  for select first 2 skip 1 distinct CA.TIPOCOMPROBANTE, CA.NUMEROCOMPROBANTE, C.CODIGOPARTICULAR, CA.RAZONSOCIAL,
+                              CA.FECHACOMPROBANTE, CA.FECHAVENCIMIENTO, M.SIMBOLO, CA.PAGADO,
+                              (CA.TOTAL + CA.IVA1 + CA.IVA2) as NETO,
+                              (CA.TOTAL + CA.IVA1 + CA.IVA2 - CA.PAGADO) as DEBE, CA.CUIT, C.EMAIL, C.TELEFONO,
+                              (0)
+      from CABEZACOMPROBANTES CA
+      inner join MONEDAS M on CA.CODIGOMONEDA = M.CODIGOMONEDA
+      inner join CLIENTES C on C.CODIGOCLIENTE = CA.CODIGOCLIENTE
+      where CA.CUENTACORRIENTE = 1 and
+            ((((CA.TOTAL + CA.IVA1 + CA.IVA2 - CA.PAGADO) >= 0.009) or ((CA.TOTAL + CA.IVA1 + CA.IVA2 - CA.PAGADO) <= -0.009)) or ((abs(CA.TOTAL + CA.IVA1 + CA.IVA2 - CA.PAGADO) > 0.0049999) and
+            (abs(CA.TOTAL + CA.IVA1 + CA.IVA2) < 0.01))) and
+            CA.ANULADA = 0 and
+            CA.TIPOCOMPROBANTE <> 'RE' and
+            CA.TIPOCOMPROBANTE <> 'PIK' and
+            CA.TIPOCOMPROBANTE <> 'PAK' and
+            CA.TIPOCOMPROBANTE <> 'RI' and
+            CA.TIPOCOMPROBANTE <> 'INA' and
+            CA.TIPOCOMPROBANTE <> 'PIK' and
+            CA.TIPOCOMPROBANTE <> 'PAK'
+      order by C.CODIGOPARTICULAR, CA.FECHACOMPROBANTE
+
+      into :TIPOCOMPROBANTE, :NUMEROCOMPROBANTE, :CODIGOPARTICULAR, :RAZONSOCIAL, :FECHACOMPROBANTE, :FECHAVENCIMIENTO,
+           :SIMBOLO, :PAGADO, :TOTAL, :SALDO, :CUIT, :EMAIL, :TELEFONO, :TOTALCOMPROBANTES
+
+  do
+  begin
+    suspend;
+  end
+end
