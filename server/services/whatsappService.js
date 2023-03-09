@@ -6,7 +6,7 @@ const whatsappService = async (data) => {
   try {
     const configAPI = {
       token:
-        'EABQDH1AYB5YBAMcilsOIecVutVOFIvrEed9P3YC8fd2R53W6ZAJkVoMRxOfBQUrv4QtfaHLZAYfTPbmZCN2ZCfSaoLnBjgasIpLcN4ZAP0xQOCTasSRTkwDdHtO4Ao0AejKwXgSTPr7ZCrR4UWOycdgXWKnm49jMjSoGbLZAtkBoZAt7HKeztxccpEf5RQhiHomg7J2oWSHrO8KLdNYwYEM4',
+        'EABQDH1AYB5YBAG7WkTHe3ZBqlxUzrrJuZA5XeM1mdCe0z2RI2bVKhARlgvSbMr56j550ZAIqG014ygx44skU59nBY0P7F2zG44lae6qSAxs0J1LqGkGrPA9kAw3AGZAqAXwMOmeg7AtA2HeoatJHvDSFLusOGMmdFwx3GKcL2lQqMVIwG2ZC7L0crBTfYGQVsBmliBL7TxTOXH3jZCWdeh',
       version: 'v15.0',
       Phone_Number_ID: '109679228721909',
       url_request: 'https://graph.facebook.com',

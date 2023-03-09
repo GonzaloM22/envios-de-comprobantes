@@ -12,6 +12,7 @@ const {
   getConfigs,
   updateConfig,
 } = require('../controllers/configController');
+const { getSent } = require('../controllers/pdfSentController');
 
 const router = express.Router();
 
@@ -24,7 +25,6 @@ router
   .put(updateRule)
   .delete(deleteRule);
 router.route('/config').post(newConfig).get(getConfigs).put(updateConfig);
-
-router.get('/factura', (req, res) => res.render('factura'));
+router.get('/historial', getSent);
 
 module.exports = router;

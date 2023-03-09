@@ -111,8 +111,12 @@ const sendWSP = async (clients, rule) => {
         //Actualizamos la fecha de ultimo envio
         await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
 
-        //Guardamos registro de lo enviado
-        await newSent(rule);
+        //Guardamos registro de lo que no se pudo enviar
+        if (!sent) {
+          await newSent(client[0].CODIGOPARTICULAR, rule, 0);
+        } else {
+          await newSent(client[0].CODIGOPARTICULAR, rule, 1);
+        }
       } catch (error) {
         console.log(error);
       }

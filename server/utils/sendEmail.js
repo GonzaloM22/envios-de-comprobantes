@@ -6,6 +6,7 @@ const pug = require('pug');
 const { updateLastSentDate } = require('../services/rulesService');
 const { formatDate } = require('../helpers');
 const { generateQR } = require('./qrAfip');
+const { newSent } = require('../services/pdfSentService');
 
 // async..await is not allowed in global scope, must use a wrapper
 const sendEmail = async (clients, config, rule) => {
@@ -26,7 +27,7 @@ const sendEmail = async (clients, config, rule) => {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
       host: SERVIDORSMTP,
-      port: PUERTO,
+      port: 10,
       secure: PUERTO === 465 ? true : false, // true for 465, false for other ports
       auth: {
         user: EMAILREMITENTE, // generated ethereal user
@@ -131,8 +132,15 @@ const sendEmail = async (clients, config, rule) => {
         await browser.close();
 
         //Actualizamos fecha de ultimo envio en la base de datos
-        if (sent)
-          await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
+
+        await updateLastSentDate(rule.CODIGOREGLA, rule.CODIGOMEDIOENVIO);
+
+        //Guardamos registro de lo que no se pudo enviar
+        if (!sent) {
+          await newSent(client[0].CODIGOPARTICULAR, rule, 0);
+        } else {
+          await newSent(client[0].CODIGOPARTICULAR, rule, 1);
+        }
       } catch (error) {
         console.log(error);
       }
